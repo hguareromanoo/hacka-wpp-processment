@@ -1,6 +1,92 @@
 {
     "S1": {
         "start_date": "2026-03-16",
-        "end_date": "2026-03-20"
+        "end_date": "2026-03-20",
+        "Shreks": {
+            "power": "P4: Triplica pontos do \u00faltimo trainee",
+            "p1_companies": [],
+            "p2_trainee": "henrique guar\u00e9 romano",
+            "p3_company": "",
+            "p4_trainee": "Enzo Yai Michellin PJ"
+        },
+        "Phineas": {
+            "power": "P1: Escolher 3 empresas p/ triplicar pontos",
+            "p1_companies": [
+                "CPTM",
+                "Sabesp",
+                "BYD"
+            ],
+            "p2_trainee": "camila santiago PJ",
+            "p3_company": "",
+            "p4_trainee": "camila santiago PJ"
+        },
+        "Tartarugas": {
+            "power": "P5: Dar 6 empresas pra equipe (Apenas status)",
+            "p1_companies": [],
+            "p2_trainee": "Mac-Knight PJ",
+            "p3_company": "",
+            "p4_trainee": "Mac-Knight PJ"
+        },
+        "Pandas": {
+            "power": "P2: Quarta-feira, fichas do trainee duplicam (max 15pontos de b\u00f4nus)",
+            "p1_companies": [],
+            "p2_trainee": "[CEE] Arthur",
+            "p3_company": "",
+            "p4_trainee": "theo PJ"
+        },
+        "Madagascar": {
+            "power": "P3: Sem limite em 1 empresa (max 6 ATs, max 15pts)",
+            "p1_companies": [],
+            "p2_trainee": "Jurkas PJ",
+            "p3_company": "grupo bandeirantes",
+            "p4_trainee": "Jurkas PJ"
+        }
+    },
+    "S2": {
+        "start_date": "2026-03-24",
+        "end_date": "2026-03-27",
+        "Shreks": {
+            "power": "P1: Escolher 3 empresas p/ triplicar pontos",
+            "p1_companies": [
+                "Grupo Marquise",
+                "Acelen",
+                "Ademicon"
+            ],
+            "p2_trainee": "PK PJ",
+            "p3_company": "",
+            "p4_trainee": "henrique guar\u00e9 romano"
+        },
+        "Phineas": {
+            "power": "P5: Dar 6 empresas pra equipe (Apenas status)",
+            "p1_companies": [],
+            "p2_trainee": "camila santiago PJ",
+            "p3_company": "",
+            "p4_trainee": "camila santiago PJ"
+        },
+        "Tartarugas": {
+            "power": "P1: Escolher 3 empresas p/ triplicar pontos",
+            "p1_companies": [
+                "Ademicon",
+                "Ach\u00e9 Laborat\u00f3rios",
+                "Acelen"
+            ],
+            "p2_trainee": "Mac-Knight PJ",
+            "p3_company": "",
+            "p4_trainee": "Mac-Knight PJ"
+        },
+        "Pandas": {
+            "power": "P4: Triplica pontos do \u00faltimo trainee",
+            "p1_companies": [],
+            "p2_trainee": "theo PJ",
+            "p3_company": "",
+            "p4_trainee": "Henrique Tavares PJ"
+        },
+        "Madagascar": {
+            "power": "P3: Sem limite em 1 empresa (max 6 ATs, max 15pts)",
+            "p1_companies": [],
+            "p2_trainee": "Jurkas PJ",
+            "p3_company": "Grupo Marquise",
+            "p4_trainee": "Jurkas PJ"
+        }
     }
 }

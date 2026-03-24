@@ -275,161 +275,161 @@ def render_config_tab(config, config_file_path, df_fichas_raw):
     
     st.write(f"**Período:** {week_data.get('start_date')} até {week_data.get('end_date')}")
     
-    with st.form(f"form_powers_{selected_week}"):
-        st.write("### Poderes das Equipes")
+    st.write("### Poderes das Equipes")
+    
+    new_week_data = {"start_date": week_data.get('start_date'), "end_date": week_data.get('end_date')}
+    
+    for team in TEAMS.keys():
+        st.markdown(f"**{team}**")
+        current_team_conf = week_data.get(team, {})
+        current_power = current_team_conf.get('power', "Nenhum")
         
-        for team in TEAMS.keys():
-            st.markdown(f"**{team}**")
-            current_team_conf = week_data.get(team, {})
-            current_power = current_team_conf.get('power', "Nenhum")
-            
-            p_idx = POWER_OPTIONS.index(current_power) if current_power in POWER_OPTIONS else 0
-            selected_p = st.selectbox(f"Poder - {team}", POWER_OPTIONS, index=p_idx, key=f"sel_p_{team}")
-            
-            p1_sels = current_team_conf.get("p1_companies", [])
-            p2_tr = current_team_conf.get("p2_trainee", TEAMS[team][0])
-            p3_comp = current_team_conf.get("p3_company", "")
-            p4_tr = current_team_conf.get("p4_trainee", TEAMS[team][0])
-            
-            if selected_p.startswith("P1"):
-                p1_sels = st.multiselect(f"[{team}] P1: Escolha até 3 empresas", options=unique_companies, default=[c for c in p1_sels if c in unique_companies], max_selections=3, key=f"p1_{team}")
-            elif selected_p.startswith("P2"):
-                p2_idx = TEAMS[team].index(p2_tr) if p2_tr in TEAMS[team] else 0
-                p2_tr = st.selectbox(f"[{team}] P2: Escolha o Trainee (Quarta)", options=TEAMS[team], index=p2_idx, key=f"p2_{team}")
-            elif selected_p.startswith("P3"):
-                p3_comp = st.selectbox(f"[{team}] P3: Escolha a Empresa s/ limite", options=[""] + unique_companies, index=(unique_companies.index(p3_comp)+1) if p3_comp in unique_companies else 0, key=f"p3_{team}")
-            elif selected_p.startswith("P4"):
-                p4_idx = TEAMS[team].index(p4_tr) if p4_tr in TEAMS[team] else 0
-                p4_tr = st.selectbox(f"[{team}] P4: Escolha o Último Trainee (3x)", options=TEAMS[team], index=p4_idx, key=f"p4_{team}")
-            
-            # Save into temp state before saving to file
-            config[selected_week][team] = {
-                "power": selected_p,
-                "p1_companies": p1_sels,
-                "p2_trainee": p2_tr,
-                "p3_company": p3_comp,
-                "p4_trainee": p4_tr
-            }
+        p_idx = POWER_OPTIONS.index(current_power) if current_power in POWER_OPTIONS else 0
+        selected_p = st.selectbox(f"Poder - {team}", POWER_OPTIONS, index=p_idx, key=f"sel_p_{team}_{selected_week}")
+        
+        p1_sels = current_team_conf.get("p1_companies", [])
+        p2_tr = current_team_conf.get("p2_trainee", TEAMS[team][0])
+        p3_comp = current_team_conf.get("p3_company", "")
+        p4_tr = current_team_conf.get("p4_trainee", TEAMS[team][0])
+        
+        if selected_p.startswith("P1"):
+            p1_sels = st.multiselect(f"[{team}] P1: Escolha até 3 empresas", options=unique_companies, default=[c for c in p1_sels if c in unique_companies], max_selections=3, key=f"p1_{team}_{selected_week}")
+        elif selected_p.startswith("P2"):
+            p2_idx = TEAMS[team].index(p2_tr) if p2_tr in TEAMS[team] else 0
+            p2_tr = st.selectbox(f"[{team}] P2: Escolha o Trainee (Quarta)", options=TEAMS[team], index=p2_idx, key=f"p2_{team}_{selected_week}")
+        elif selected_p.startswith("P3"):
+            p3_comp = st.selectbox(f"[{team}] P3: Escolha a Empresa s/ limite", options=[""] + unique_companies, index=(unique_companies.index(p3_comp)+1) if p3_comp in unique_companies else 0, key=f"p3_{team}_{selected_week}")
+        elif selected_p.startswith("P4"):
+            p4_idx = TEAMS[team].index(p4_tr) if p4_tr in TEAMS[team] else 0
+            p4_tr = st.selectbox(f"[{team}] P4: Escolha o Último Trainee (3x)", options=TEAMS[team], index=p4_idx, key=f"p4_{team}_{selected_week}")
+        
+        new_week_data[team] = {
+            "power": selected_p,
+            "p1_companies": p1_sels,
+            "p2_trainee": p2_tr,
+            "p3_company": p3_comp,
+            "p4_trainee": p4_tr
+        }
 
-            st.write("---")
-            
-        if st.form_submit_button("Salvar Configurações"):
-            save_powers_config(config)
-            st.success("Configurações salvas com sucesso!")
-            st.rerun()
+        st.write("---")
+        
+    if st.button("Salvar Configurações", type="primary"):
+        config[selected_week] = new_week_data
+        save_powers_config(config)
+        st.success("Configurações salvas com sucesso!")
+        st.rerun()
 
 def main():
     config = load_powers_config()
     
-    tab_dash, tab_config = st.tabs(["📊 Dashboard de Pontos", "⚙️ Configurações de Poderes"])
+    st.title("🏆 Hacka AT Points Dashboard")
+    st.markdown("Acompanhamento de pontos da competição de prospecção.")
     
-    # Render config tab first to be able to use the same logic
-    with tab_config:
-        st.title("Administração Semanal")
-        st.markdown("Crie semanas e distribua os poderes para as equipes de acordo com a regra da competição.")
+    st.divider()
+    st.header("1. Carga de Dados")
+    uploaded_file = st.file_uploader("Peça ao Guaré para envio do histórico do whatsapp", type=["txt"])
     
-    with tab_dash:
-        st.title("🏆 Hacka AT Points Dashboard")
-        st.markdown("Acompanhamento de pontos da competição de prospecção.")
+    if uploaded_file is None:
+        st.info("⬆️ Faça o upload do arquivo _chat.txt exportado do WhatsApp acima para começar.")
+        return
         
-        uploaded_file = st.file_uploader("Peça ao Guaré para envio do histórico do whatsapp", type=["txt"])
-        df_raw = None
-        fichas_raw = []
+    text = uploaded_file.read().decode("utf-8")
+    fichas_raw = parse_chat_text(text)
+    
+    if not fichas_raw:
+        st.warning("⚠️ Nenhuma Ficha de AT encontrada no arquivo.")
+        return
         
-        if uploaded_file is not None:
-            text = uploaded_file.read().decode("utf-8")
-            fichas_raw = parse_chat_text(text)
-            if fichas_raw:
-                df_raw = pd.DataFrame(fichas_raw)
-        else:
-            st.info("Faça o upload do arquivo _chat.txt exportado do WhatsApp acima para visualizar os dados.")
-            
-        with tab_config:
-            render_config_tab(config, CONFIG_FILE, df_raw)
-            
-        if not fichas_raw:
-            return
-            
-        # Apply powers
-        fichas_final = apply_powers(fichas_raw, config)
-        df = pd.DataFrame(fichas_final)
-        
-        total_valid = len(df[~df['Status'].str.contains("Duplicate")])
-        total_points = df['Points Awarded'].sum()
-        
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Total de Fichas Enviadas", len(df))
-        col2.metric("Fichas Válidas", total_valid)
-        col3.metric("Total de Pontos (Bruto)", total_points)
-        
-        # Calculate Leaderboards before displaying
-        team_points = df.groupby('Team')['Points Awarded'].sum().reset_index()
-        team_points['Points Awarded'] = team_points['Points Awarded'].astype(float)
-        team_points.loc[team_points['Team'] == 'Shreks', 'Points Awarded'] *= 1.33
-        team_points['Points Awarded'] = team_points['Points Awarded'].round(2)
-        team_points = team_points.sort_values(by='Points Awarded', ascending=False).reset_index(drop=True)
-        team_points.index += 1
-        
-        ind_points = df.groupby(['Sender', 'Team'])['Points Awarded'].sum().reset_index()
-        ind_points = ind_points.sort_values(by='Points Awarded', ascending=False).reset_index(drop=True)
-        ind_points.index += 1
+    df_raw = pd.DataFrame(fichas_raw)
+    
+    st.divider()
+    st.header("2. Configuração Semanal")
+    # Config UI with guarantees that df_raw exists
+    render_config_tab(config, CONFIG_FILE, df_raw)
+    
+    st.divider()
+    st.header("3. Resultado e Dashboard de Pontos")
+    
+    # Apply powers
+    fichas_final = apply_powers(fichas_raw, config)
+    df = pd.DataFrame(fichas_final)
+    
+    total_valid = len(df[~df['Status'].str.contains("Duplicate")])
+    total_points = df['Points Awarded'].sum()
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total de Fichas Enviadas", len(df))
+    col2.metric("Fichas Válidas", total_valid)
+    col3.metric("Total de Pontos (Bruto)", total_points)
+    
+    # Calculate Leaderboards before displaying
+    team_points = df.groupby('Team')['Points Awarded'].sum().reset_index()
+    team_points['Points Awarded'] = team_points['Points Awarded'].astype(float)
+    team_points.loc[team_points['Team'] == 'Shreks', 'Points Awarded'] *= 1.33
+    team_points['Points Awarded'] = team_points['Points Awarded'].round(2)
+    team_points = team_points.sort_values(by='Points Awarded', ascending=False).reset_index(drop=True)
+    team_points.index += 1
+    
+    ind_points = df.groupby(['Sender', 'Team'])['Points Awarded'].sum().reset_index()
+    ind_points = ind_points.sort_values(by='Points Awarded', ascending=False).reset_index(drop=True)
+    ind_points.index += 1
 
-        st.divider()
-        
-        top_team = team_points.iloc[0] if not team_points.empty else None
-        top_ind = ind_points.iloc[0] if not ind_points.empty else None
-        
-        col_champ, col_hero = st.columns(2)
-        with col_champ:
-            if top_team is not None:
-                st.success(f"🏆 **Champion (Equipe em 1º):** {top_team['Team']} com {top_team['Points Awarded']} pts")
-        with col_hero:
-            if top_ind is not None:
-                st.info(f"🦸‍♂️ **Herói do Hacka (1º Individual):** {top_ind['Sender']} com {top_ind['Points Awarded']} pts")
+    st.write("")
+    
+    top_team = team_points.iloc[0] if not team_points.empty else None
+    top_ind = ind_points.iloc[0] if not ind_points.empty else None
+    
+    col_champ, col_hero = st.columns(2)
+    with col_champ:
+        if top_team is not None:
+            st.success(f"🏆 **Champion (Equipe em 1º):** {top_team['Team']} com {top_team['Points Awarded']} pts")
+    with col_hero:
+        if top_ind is not None:
+            st.info(f"🦸‍♂️ **Herói do Hacka (1º Individual):** {top_ind['Sender']} com {top_ind['Points Awarded']} pts")
 
-        st.divider()
-        col_team, col_ind = st.columns(2)
+    st.write("")
+    col_team, col_ind = st.columns(2)
+    
+    with col_team:
+        st.subheader("👥 Pontos por Equipe")
+        st.dataframe(team_points, use_container_width=True)
         
-        with col_team:
-            st.subheader("👥 Pontos por Equipe")
-            st.dataframe(team_points, use_container_width=True)
-            
-        with col_ind:
-            st.subheader("👤 Pontos Individuais")
-            st.dataframe(ind_points, use_container_width=True)
-        
-        st.divider()
-        
-        st.subheader("📋 Histórico de Fichas e Aplicação de Poderes")
-        
-        col_f0, col_f1, col_f2, col_f3 = st.columns(4)
-        with col_f0:
-            week_options = ["Todas"] + sorted(df['Week'].unique().tolist())
-            week_filter = st.selectbox("Semana", week_options)
-        with col_f1:
-            status_options = ["Todos"] + sorted(df['Status'].unique().tolist())
-            status_filter = st.selectbox("Status / Poder", status_options)
-        with col_f2:
-            team_options = ["Todos"] + sorted(df['Team'].unique().tolist())
-            team_filter = st.selectbox("Equipe", team_options)
-        with col_f3:
-            if team_filter != "Todos":
-                sender_options = ["Todos"] + sorted(df[df['Team'] == team_filter]['Sender'].unique().tolist())
-            else:
-                sender_options = ["Todos"] + sorted(df['Sender'].unique().tolist())
-            sender_filter = st.selectbox("Remetente", sender_options)
-        
-        filtered_df = df
-        if week_filter != "Todas":
-            filtered_df = filtered_df[filtered_df['Week'] == week_filter]
-        if status_filter != "Todos":
-            filtered_df = filtered_df[filtered_df['Status'] == status_filter]
+    with col_ind:
+        st.subheader("👤 Pontos Individuais")
+        st.dataframe(ind_points, use_container_width=True)
+    
+    st.divider()
+    
+    st.subheader("📋 Histórico de Fichas e Aplicação de Poderes")
+    
+    col_f0, col_f1, col_f2, col_f3 = st.columns(4)
+    with col_f0:
+        week_options = ["Todas"] + sorted(df['Week'].unique().tolist())
+        week_filter = st.selectbox("Semana", week_options)
+    with col_f1:
+        status_options = ["Todos"] + sorted(df['Status'].unique().tolist())
+        status_filter = st.selectbox("Status / Poder", status_options)
+    with col_f2:
+        team_options = ["Todos"] + sorted(df['Team'].unique().tolist())
+        team_filter = st.selectbox("Equipe", team_options)
+    with col_f3:
         if team_filter != "Todos":
-            filtered_df = filtered_df[filtered_df['Team'] == team_filter]
-        if sender_filter != "Todos":
-            filtered_df = filtered_df[filtered_df['Sender'] == sender_filter]
-            
-        st.dataframe(filtered_df, use_container_width=True)
+            sender_options = ["Todos"] + sorted(df[df['Team'] == team_filter]['Sender'].unique().tolist())
+        else:
+            sender_options = ["Todos"] + sorted(df['Sender'].unique().tolist())
+        sender_filter = st.selectbox("Remetente", sender_options)
+    
+    filtered_df = df
+    if week_filter != "Todas":
+        filtered_df = filtered_df[filtered_df['Week'] == week_filter]
+    if status_filter != "Todos":
+        filtered_df = filtered_df[filtered_df['Status'] == status_filter]
+    if team_filter != "Todos":
+        filtered_df = filtered_df[filtered_df['Team'] == team_filter]
+    if sender_filter != "Todos":
+        filtered_df = filtered_df[filtered_df['Sender'] == sender_filter]
+        
+    st.dataframe(filtered_df, use_container_width=True)
 
 if __name__ == "__main__":
     main()
